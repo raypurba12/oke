@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Form Filler - Template Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+        }
+
+        .template-section {
+            display: none;
+        }
+
+        .template-section.active {
+            display: block;
+        }
+
+        .progress {
+            background: #e0e0e0;
+            height: 8px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        .template-data {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .data-row {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .data-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .data-value {
+            color: #333;
+        }
+
+        .webqual-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .webqual-item {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            border-left: 3px solid #667eea;
+            font-size: 14px;
+        }
+
+        .status {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .status.info {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status.success {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .emoji {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            margin-bottom: 20px;
+        }
+
+        .legend {
+            background: #e8f5e9;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #2e7d32;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Setup Section -->
+        <div id="setupSection" class="card">
+            <h1>📝 Manual Form Filler</h1>
+            <p class="subtitle">Sistem buka browser, Anda isi manual dengan template</p>
+
+            <div class="form-group">
+                <label for="formUrl">URL Google Form</label>
+                <input type="text" id="formUrl"
+                    value="https://docs.google.com/forms/d/e/1FAIpQLSc4S3rsa1MQywUMa6MKJK6EUDU2UeO4zeFWGFmsnM-VgsvtLg/viewform"
+                    placeholder="Masukkan URL Google Form">
+            </div>
+
+            <div class="form-group">
+                <label for="jumlah">Jumlah Pengisian</label>
+                <input type="number" id="jumlah" value="5" min="1" max="100">
+            </div>
+
+            <button class="btn" onclick="startFilling()">
+                <span class="emoji">🚀</span> Mulai
+            </button>
+        </div>
+
+        <!-- Template Section -->
+        <div id="templateSection" class="template-section">
+            <div class="card">
+                <div class="progress">
+                    <div id="progressBar" class="progress-bar" style="width: 0%"></div>
+                </div>
+
+                <div class="status info">
+                    <span class="emoji">📝</span>
+                    <span id="statusText">Pengisian ke-1 dari 5</span>
+                </div>
+
+                <div class="highlight">
+                    <strong>📋 TEMPLATE PENGISIAN</strong><br>
+                    Browser sudah terbuka dengan form. Isi sesuai template di bawah ini:
+                </div>
+
+                <div class="template-data">
+                    <div class="data-row">
+                        <div class="data-label">Nama</div>
+                        <div class="data-value" id="tmplNama">-</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="data-label">Jenis Kelamin</div>
+                        <div class="data-value" id="tmplJK">-</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="data-label">Usia</div>
+                        <div class="data-value" id="tmplUsia">-</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="data-label">Pekerjaan</div>
+                        <div class="data-value" id="tmplPekerjaan">-</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="data-label">Pendidikan</div>
+                        <div class="data-value" id="tmplPendidikan">-</div>
+                    </div>
+                    <div class="data-row">
+                        <div class="data-label">Domisili</div>
+                        <div class="data-value" id="tmplDomisili">-</div>
+                    </div>
+                </div>
+
+                <h3 style="margin: 20px 0 15px 0; color: #667eea;">20 Pertanyaan Webqual 4.0</h3>
+                <div id="webqualGrid" class="webqual-grid"></div>
+
+                <div class="legend">
+                    <strong>Keterangan:</strong> STS = Sangat Tidak Setuju | TS = Tidak Setuju | N = Netral | S = Setuju
+                    | SS = Sangat Setuju
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <p style="color: #666; margin-bottom: 15px;">
+                        <strong>Instruksi:</strong><br>
+                        1. Lihat template di atas<br>
+                        2. Isi form di browser sesuai template<br>
+                        3. Klik KIRIM di form<br>
+                        4. Kembali ke sini dan klik "Selesai & Lanjut"<br>
+                        5. Template baru akan muncul dan form akan refresh otomatis
+                    </p>
+
+                    <div class="btn-group">
+                        <button class="btn" onclick="nextTemplate()">
+                            <span class="emoji">✅</span> Selesai & Lanjut
+                        </button>
+                        <button class="btn btn-danger" onclick="closeBrowser()">
+                            <span class="emoji">❌</span> Tutup Browser
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Done Section -->
+        <div id="doneSection" class="template-section">
+            <div class="card">
+                <div class="status success">
+                    <span class="emoji">🎉</span>
+                    <span>Semua pengisian selesai!</span>
+                </div>
+
+                <p style="text-align: center; color: #666; margin: 20px 0;">
+                    Total <strong id="totalDone">0</strong> form berhasil diisi
+                </p>
+
+                <div class="btn-group">
+                    <button class="btn" onclick="location.reload()">
+                        <span class="emoji">🔄</span> Mulai Lagi
+                    </button>
+                    <button class="btn btn-danger" onclick="closeBrowser()">
+                        <span class="emoji">❌</span> Tutup Browser
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentData = null;
+
+        async function startFilling() {
+            const formUrl = document.getElementById('formUrl').value;
+            const jumlah = document.getElementById('jumlah').value;
+
+            if (!formUrl) {
+                alert('Masukkan URL form terlebih dahulu!');
+                return;
+            }
+
+            const response = await fetch('/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ form_url: formUrl, jumlah: jumlah })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                document.getElementById('setupSection').style.display = 'none';
+                document.getElementById('templateSection').classList.add('active');
+                loadTemplate();
+            } else {
+                alert('Error: ' + result.error);
+            }
+        }
+
+        async function loadTemplate() {
+            const response = await fetch('/get-template');
+            const data = await response.json();
+
+            if (data.done) {
+                showDone(data.total);
+                return;
+            }
+
+            currentData = data;
+
+            // Update progress
+            const progress = (data.current / data.total) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('statusText').textContent =
+                `Pengisian ke-${data.current} dari ${data.total}`;
+
+            // Update template
+            const tmpl = data.template;
+            document.getElementById('tmplNama').textContent = tmpl.nama;
+            document.getElementById('tmplJK').textContent = tmpl.jenis_kelamin;
+            document.getElementById('tmplUsia').textContent = tmpl.usia;
+            document.getElementById('tmplPekerjaan').textContent = tmpl.pekerjaan;
+            document.getElementById('tmplPendidikan').textContent = tmpl.pendidikan;
+            document.getElementById('tmplDomisili').textContent = tmpl.domisili;
+
+            // Update webqual
+            const grid = document.getElementById('webqualGrid');
+            grid.innerHTML = '';
+            tmpl.webqual.forEach((answer, i) => {
+                const item = document.createElement('div');
+                item.className = 'webqual-item';
+                item.innerHTML = `<strong>${i + 1}.</strong> ${answer}`;
+                grid.appendChild(item);
+            });
+        }
+
+        async function nextTemplate() {
+            loadTemplate();
+        }
+
+        async function closeBrowser() {
+            const response = await fetch('/close-browser', { method: 'POST' });
+            const result = await response.json();
+
+            if (result.success) {
+                alert('Browser ditutup');
+                location.reload();
+            }
+        }
+
+        function showDone(total) {
+            document.getElementById('templateSection').classList.remove('active');
+            document.getElementById('doneSection').classList.add('active');
+            document.getElementById('totalDone').textContent = total;
+        }
+    </script>
+</body>
+
+</html>

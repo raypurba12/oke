@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+chromedriver-win64/
+*.exe
+.DS_Store
+.vscode/
+*.log
